@@ -241,14 +241,15 @@ int main()
 
 
 class Point  // class 는 기본적으로 default = private :외부참조 불가
-{public:    //: 외부참조 가능
+{
+public:    //: 외부참조 가능
 	int x, y;
-	Point(int a, int b) : x(a),y(b) {}
+	Point(int a, int b) : x(a), y(b) {}
 	Point() {} // null 생성자
 	int GetX() { return x; }
 	int GetY() { return y; }
-	void SetX(int a) { x=a; }
-	void SetY(int a) { y=a; }
+	void SetX(int a) { x = a; }
+	void SetY(int a) { y = a; }
 	// p1=p+n; p1,p:Point n:int => p1.x=p.x+n; p1.y=p.y+n;
 	Point operator+(int n)
 	{
@@ -257,10 +258,10 @@ class Point  // class 는 기본적으로 default = private :외부참조 불가
 		return p1;
 	}
 
-	Point operator+(Point ) //Point + Point operation
+	Point operator+(Point p) //Point + Point operation
 	{
 		Point p1;
-		p1.x = x + a; p1.y = y + a;
+		p1.x = x + p.x; p1.y = y + p.y;
 		return p1;
 	}
 
@@ -271,12 +272,12 @@ class Rect
 {
 private: // 없어도 기본적으로 private 이다
 	Point p1, p2;  //멤버 변수
-public:	
-	Rect(Point pp1, Point pp2):p1(pp1),p2(pp2)
- 	{// 함수의 local변수와 같으므로 ' Point pp1, Point pp2 ' 멤버변수가 아니다 
+public:
+	Rect(Point pp1, Point pp2) :p1(pp1), p2(pp2)
+	{// 함수의 local변수와 같으므로 ' Point pp1, Point pp2 ' 멤버변수가 아니다 
 //		p1 = pp1, p2 = pp2 ; // class변수의 대입문
 	}
-	Rect():p1(0,0),p2(0,0) {} //Rect(Point &pp1,Point &pp2)
+	Rect() :p1(0, 0), p2(0, 0) {} //Rect(Point &pp1,Point &pp2)
 
 
 	//int GetX() { return p1.x; }
@@ -287,10 +288,10 @@ public:
 	void SetP1(Point p) { p1 = p; }
 	void SetP2(Point p) { p2 = p; }
 
-	int GetX() { return abs(p1.x-p2.x); }
-	int GetY() { return abs(p1.y-p2.y); }
+	int GetX() { return abs(p1.x - p2.x); }
+	int GetY() { return abs(p1.y - p2.y); }
 
-	
+
 	int area()
 	{
 		int x = p1.x - p2.x;                //멤버 변수가 아니다.
@@ -310,7 +311,7 @@ class RectEx : public Rect // Rect class를 상속 private
 {
 	int a;
 public:
-	RectEx(Point pp1, Point pp2) : Rect(pp1,pp2)
+	RectEx(Point pp1, Point pp2) : Rect(pp1, pp2)
 	{
 		//SetP1(pp1); SetP2(pp2);
 	}
@@ -346,11 +347,11 @@ public:  // 위에 private 부분이 주어져서 초기화하는 작업이 필�
 	}
 	double CLen()
 	{
-		return rad * 2 * PI ; // dia()*PI 랑 똑같지만 좀더 느리다
+		return rad * 2 * PI; // dia()*PI 랑 똑같지만 좀더 느리다
 	}
 	double Carea()
 	{
-		return rad * rad *PI;
+		return rad * rad * PI;
 	}
 
 
@@ -392,18 +393,18 @@ public:
 
 int func1(Rect* r);
 int func2(Rect& r);
-int func3(Circle &c1);
+int func3(Circle& c1);
 int main()
 {
 	int n1 = 10, n2 = 20;
 	Point p1(n1, n1), p2(n2, n2);
-	
 
-//	Rect r1 = { {10,10},{20,20} }; //struct type 초기화
+
+	//	Rect r1 = { {10,10},{20,20} }; //struct type 초기화
 	Rect r1(p1, p2);  //Rect class 생성자 이용 초기화
 	Rect r2;
 
-	
+
 	Circle c1(p1, p2);
 
 	func1(&r1); // func1(r1) 로 하면안된다 포인터 변수 전달을 위해 변수(클래스)의 주소 전달
@@ -412,7 +413,7 @@ int main()
 
 
 	printf("main 함수 r1: 두점 p1(10, 10), p2(20,20)로 구성되는 사각형의 면적은 %d 입니다.\n"
-		,r1.area());
+		, r1.area());
 	printf("main 함수 r2: 두점 p1(10, 10), p2(20,20)로 구성되는 사각형의 면적은 %d 입니다.\n"
 		, r2.area());
 
@@ -421,28 +422,34 @@ int main()
 
 	p1.SetX(15); p1.SetY(15);
 	Point p3 = p1 + 10;
-	printf("Point 클래스의 연산자 오버로딩 테스트 (+) : p1(%d,%d) + %d ---> (%d,%d) \n", p1.x, p1.y, 10, p3.x, p3.y);
 
+	printf("Point 클래스의 연산자 오버로딩 테스트1 (+) : p1(%d,%d) + %d ---> (%d,%d) \n", p1.x, p1.y, 10, p3.x, p3.y);
+
+	Point p4 = p1 + p3;
+	Point* p5= &p4;
+	printf("Point 클래스의 연산자 오버로딩 테스트2 (+) : p1(%d,%d) + p3(%d,%d) ---> (%d,%d) \n", p1.x, p1.y, p3.x, p3.y,p4.x,p4.y);
+
+	printf("Point 클래스의 연산자 오버로딩 테스트2 (+) : p1(%d,%d) + p3(%d,%d) ---> (%d,%d) \n", p1.x, p1.y, p3.x, p3.y, p5->x, p5->y);
 
 }
 
 int func1(Rect* r)
 {
-	 printf("*r 을 이용: 두점 p1(10, 10), p2(20,20)로 구성되는 사각형의 면적은 %d 입니다.\n"
+	printf("*r 을 이용: 두점 p1(10, 10), p2(20,20)로 구성되는 사각형의 면적은 %d 입니다.\n"
 		, r->area());  // 포인터를 이용했으므로 r1.area()로 하면 안된다.
 
-	 return 0;
+	return 0;
 }
 
-int func2(Rect &r)
+int func2(Rect& r)
 {
-	 printf("&r 을 이용: 두점 p1(10, 10), p2(20,20)로 구성되는 사각형의 면적은 %d 입니다.\n"
+	printf("&r 을 이용: 두점 p1(10, 10), p2(20,20)로 구성되는 사각형의 면적은 %d 입니다.\n"
 		, r.area());  // 포인터를 이용했으므로 r1.area()로 하면 안된다.
 
-	 return 0;
+	return 0;
 }
 
-int func3(Circle &c1)
+int func3(Circle& c1)
 {
 	printf("--------------원-----------------\n");
 	printf(" 두점 p1(10, 10), p2(20,20)로 구성되는 원의 면적은 %.2lf 입니다.\n", c1.Carea());
@@ -504,12 +511,5 @@ SoSimple ( int n1, int n2) : num1(n1) , num2(n2)  //--> num1=n1 ,num2=n2; 랑 �
 
 
 
-// 
-
-
-r1 =(0,0)  (3, 3) 
-r2 =(-1,-1) ,(1,1)
-
-r1=(1,1)
 
 ```
