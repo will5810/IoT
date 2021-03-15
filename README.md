@@ -548,4 +548,7 @@ MFC 애플케이션
 오른쪽 리소스뷰 dialog 삽입 -> edit control  ,button ,static text
 
 MSDN
+
+안드로이드 앱 개발자
+https://brunch.co.kr/@imagineer/94
 ```
