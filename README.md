@@ -513,3 +513,39 @@ SoSimple ( int n1, int n2) : num1(n1) , num2(n2)  //--> num1=n1 ,num2=n2; 랑 �
 
 
 ```
+
+
+### WEEK3 10강 03/15
+
+```
+SDK 프로그램 동작원리
+
+이벤트 발생
+ : mouse ,KBD , network-> waiting , timer
+
+
+파일  OPEN
+속성 : ID : ID_FILEOPEN
+
+
+switch ID_FILEOPEN:
+
+dialog 삽입
+
+캡션 Dialog 테스트
+
+VISUAL 설치
+ASP
+
+
+C++
+최신 MFC
+밑에 빌드도구용 2개
+
+만들기
+MFC 애플케이션
+-> 단일문서 , MFC standard  
+오른쪽 리소스뷰 dialog 삽입 -> edit control  ,button ,static text
+
+MSDN
+```
