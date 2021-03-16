@@ -566,7 +566,7 @@ https://brunch.co.kr/@imagineer/94
 
 ID_MNU_Test1
 
-```
+
 이벤트 처리기 
 CMFCAppl 3 app 
 command
@@ -580,10 +580,10 @@ MFCApplication3
 IDD_DLG_DrawTest
 IDD_CDrawTest
 
-
+```
 ai 전시회
 http://www.aiexpo.co.kr/page/sub1_1
 
 정보처리기사
 https://blog.naver.com/iwebmania/222211324338
-```
+
