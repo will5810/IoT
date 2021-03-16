@@ -552,3 +552,38 @@ MSDN
 안드로이드 앱 개발자
 https://brunch.co.kr/@imagineer/94
 ```
+
+### 11강 3/16
+
+```
+캡션: 이름을 바꿀수있다.
+
+
+다이얼로그 테스트
+메뉴에서 만들고
+캡션 테스트(&T)
+캡션 테스트(&T)\tCtrl+T
+
+ID_MNU_Test1
+
+```
+이벤트 처리기 
+CMFCAppl 3 app 
+command
+onmuu
+
+클래스뷰에 있는
+MFCApplication3
+마법사 생산 OnInitDialog
+
+
+IDD_DLG_DrawTest
+IDD_CDrawTest
+
+
+ai 전시회
+http://www.aiexpo.co.kr/page/sub1_1
+
+정보처리기사
+https://blog.naver.com/iwebmania/222211324338
+```
