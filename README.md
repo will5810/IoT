@@ -589,3 +589,105 @@ https://blog.naver.com/iwebmania/222211324338
 
 https://learnjs.vlpt.us/basics/05-function.html
 
+
+
+###12강 3/17
+```
+
+[ C# ]
+형식 안정 객체지향언어
+기존 언어들의 생산성을 개선하고 성능이 좋아짐
+
+닷넷 프레임워크( . NET Frame work)
+
+기본자료형 
+int (4) , long (8) , float (4) , double (8) 
+, char (C# 에ㅅ는 2Byte) , string ,bool
+
+자료형 변환 메서드
+문자열 -> 숫자	int Parse() , double Parse()
+다른 자료형 ->	ToString()
+문자열 -> 불	bool.Parse()
+
+키입력 메서드
+ReadKey()
+
+
+VISUAL
+
+윈도우스 FORMS 앱
+솔루션 탐색기
+FORM1.Designer.cs
+label , button t, textbox 만들고 ,속성 조절후
+버튼 더블클릭후 코드작성
+
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        int status = 0;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(status==0)
+            {
+                button1.Text = "버튼 테스트1";
+                status = 1;
+            }
+            else
+            {
+                button1.Text = "버튼 테스트2";
+                status = 0;
+            }
+
+        }
+        
+    }
+}
+
+
+c++ 에서 status = !status; 하면 가능했지만 
+c# 에서는 
+
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        bool status = false;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(status)
+            {
+                button1.Text = "버튼 테스트1";
+          
+            }
+            else
+            {
+                button1.Text = "버튼 테스트2";
+    
+            }
+            status = !status;
+        }
+        
+    }
+}
+bool 을 붙여줘야한다
+
+속성창에서 바꿔줘야한다. 그래야 다른것도 같이 수정되므로
+
+도구창에서 OpenFileDialog 드래그해준다.
+ 
+잘못 더블클릭했으면 속성창 번개 모양에서 지워주고 확인해주면 된다
+
+도구창에 있는거 다른거 해보기
+
+```
