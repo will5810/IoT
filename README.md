@@ -691,3 +691,31 @@ bool 을 붙여줘야한다
 도구창에 있는거 다른거 해보기
 
 ```
+
+
+### 13강 3/18
+
+'''
+[ C# ]
+
+C++
+MyClass dlg;
+MyClass *dlg=new MyClass();
+dlg->member;
+
+C#
+MyClass dlg=new MyClass();
+dlg.meber
+
+
+try , catch , finally
+
+
+------------------------------------------
+StreamReader sr; 할때는 빨간줄이 나오는데
+이럴때 마우스를 위에올려놓고 using 을 누르면 위에 using System.IO; 부분이 활성화된다.
+
+Anchor :  안에 텍스트 박스 사이즈를 Form 창하고 같이 비례로 조절할때 쓰인다
+
+WordWrap : 자동 줄바꿈
+'''
