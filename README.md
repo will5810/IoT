@@ -726,4 +726,24 @@ WordWrap : 자동 줄바꿈
 
 업로드 자료보기
 
+```
 
+### WEEK4 15강 3/22
+```
+1. Mouse 의 왼쪽 버튼 클릭시 그리기 Start
+  -현재의 Point 값을 저장
+2. Mouse 의 이동에 따라 발생하는 Move event 에서 Line Draw , 현재의 값을 재 저장
+3. (2)번 동작을 반복
+4. Mouse 의 왼쪽 버튼이 해제되면 그리기 stop
+
+
+
+[SQL]
+select 기본 구문
+
+조건문에서 SQL 은 A와B가 같다라고 할때  ' = ' 하나만 쓴다.
+
+DB 시작
+
+
+```
