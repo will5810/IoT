@@ -744,6 +744,82 @@ select 기본 구문
 조건문에서 SQL 은 A와B가 같다라고 할때  ' = ' 하나만 쓴다.
 
 DB 시작
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
 
+
+
+namespace WindowsFormsDBManager
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void btnInput_Click(object sender, EventArgs e)
+        {
+            string str = tbInput.Text;
+            dbGrid.Columns.Add(str, str); //먼저 열을 추가해야한다.
+            dbGrid.Rows.Add();
+        }
+
+        private void btnValue_Click(object sender, EventArgs e)
+        {
+            string str = tbValue.Text;
+            dbGrid.Rows[1].Cells[2].Value = str;
+            
+        }
+
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            DialogResult ret = openFileDialog1.ShowDialog();
+            if (ret == DialogResult.OK)
+            {
+
+                string fName = openFileDialog1.FileName;
+
+
+
+                StreamReader sr = new StreamReader(fName);
+                string buf = sr.ReadToEnd();
+                dbGrid.Text = buf;
+                sr.Close();
+            }
+        }
+    }
+}
+
+
+namespace myLibrary
+{
+    class myLib
+    {
+        public static int Count(char deli, string str) //str 문자열 deli 구분자의 개수 +1
+        {
+            string[] Strs = str.Split(deli);
+            int n = Strs.Length;
+            return n - 1;
+        }
+        public static string GetToken(int index, char deli, string str)
+        {
+            string[] Strs = str.Split(',');
+            string ret = Strs[index];
+            return ret;
+
+        }
+
+    }
+
+}
 
 ```
