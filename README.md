@@ -823,3 +823,36 @@ namespace myLibrary
 }
 
 ```
+###  16강 3/23
+
+```
+1. file select
+2. open and read
+3. grid header gen
+4. record append
+5. input to cell
+
+
+Visual DB 만들기
+
+서버탐색기 -> 데이터연결 우클릭 -> 연결추가 , Micro SQL Server 파일 클릭후 만들기
+
+열 : field 행 : record
+
+mnuStrip 에서 DB 열기 만들기
+똑같이 OpenFileDialog 열기 하고
+데이터베이스 연결 문자열 복사후에
+
+
+ SqlConnection sqlCon;
+sqlCon.ConnectionString = " " 안에 넣어준다.
+근데 여기서 '\' 하나이기때문에 '\\' 처럼 두개만들어줘도 되고
+@" " 이처럼 앞에 '@' 를 붙여줘도 된다.
+
+
+
+update fStatus set Temp=13 where id=2
+
+insert into fstatus values(100004,15,72,4)
+
+```
