@@ -856,3 +856,130 @@ update fStatus set Temp=13 where id=2
 insert into fstatus values(100004,15,72,4)
 
 ```
+
+
+###  17강 3/24
+
+```
+
+[ SQL ]
+
+update fstatus set temp=23 where id=6
+-> id=6 인곳에 temp=23 으로 바꿔라
+만약 update fstatus set temp=23  이렇게 쓰면
+-> 모든 temp=23 이 되고 복구가 안되므로 조심하자
+
+### select * from fstatus   --> 데이터를 보여준다.
+
+### insert into fstatus values(100004,15,72,4)  --> 삽입
+
+### tbSql (텍스트박스) 안에 테이블 데이터를 나타내라
+
+        public static string GetToken(int index, char deli, string str)
+        {
+            string[] Strs = str.Split(deli);
+            //int n = Strs.Length;
+            string ret = Strs[index];
+            return ret;
+
+        }
+
+GetToken 을 만들고
+
+        int RunSql(string sql)
+        {
+            try
+            {
+                sqlCmd.CommandText = sql; // insert into fstatus values (1,2,3,4) 
+                if (GetToken(0,' ',sql).ToUpper()=="SELECT")  // ToUpper로 대문자로 만들어줬으므로 걱정 없다
+                {
+
+                    SqlDataReader sr = sqlCmd.ExecuteReader();
+
+                    for (int i=0;sr.Read();i++)
+                    {
+                        string buf = "";
+                        for(int j=0;j<sr.FieldCount;j++)
+                        {                           
+                            object str = sr.GetValue(j);
+                            buf += $" {str}";                                               
+                        }
+
+                        tbSql.Text += $"\r\n{buf}";                                                                   
+                    }
+
+                    sr.Close();  //종료 시켜주어야한다
+                }
+
+	else
+	{
+	}
+       }
+
+추가해준다.
+
+
+### GridView 안에 테이블 데이터를 나타내라
+
+GetToken 을 이용하여
+
+        int RunSql(string sql)
+        {
+            try
+            {
+                sqlCmd.CommandText = sql; // insert into fstatus values (1,2,3,4) 
+                if (GetToken(0,' ',sql).ToUpper()=="SELECT")  // ToUpper로 대문자로 만들어줬으므로 걱정 없다
+                {
+
+                    dataGrid.Rows.Clear();   // 따로 행과열을 Clear 해줘야한다.
+                    dataGrid.Columns.Clear();
+                    SqlDataReader sr = sqlCmd.ExecuteReader();
+
+                    for (int i = 0; i < sr.FieldCount; i++)   // Header 처리 프로세스 //
+                    {
+                        dataGrid.Columns.Add(sr.GetName(i), sr.GetName(i));
+                    }
+
+
+                    for (int i = 0; sr.Read(); i++)
+                    {
+                        int rIdx = dataGrid.Rows.Add();
+                        for (int j = 0; j < sr.FieldCount; j++)
+                        {
+                            object str = sr.GetValue(j);
+                            dataGrid.Rows[rIdx].Cells[j].Value = str;
+                        }
+                    }
+
+                    sr.Close();
+                }
+	else
+	{
+	}
+       }
+     
+
+
+### delete fstatus where id=3  --> id=3 인곳을 지워준다.
+
+
+### 텍스트박스에서 키보드 Enter 눌러주면 바로바로 실행
+
+        private void tbSql_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter) return;
+
+            string str = tbSql.Text;
+            string[] sArr = str.Split('\n'); // 줄바꿈문자 :\r\n
+            int n = sArr.Length;
+            string sql = sArr[n - 1].Trim();
+
+            RunSql(sql);
+
+        }
+
+
+```
+
+
+
