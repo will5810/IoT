@@ -982,4 +982,118 @@ GetToken 을 이용하여
 ```
 
 
+###  18강 3/25
+
+```
+과제1)
+statusStrip 안에 sbPanel3 를 클릭하면
+"select * from fstatus" 처럼 바로 나오게 만들어라
+
+==>
+        private void sbPanel3_Click(object sender, EventArgs e)
+        {
+            //string sql = s1.Trim(); 
+            //sqlCmd.CommandText = sql;  
+            //TableName = GetToken(3, ' ', sql);
+
+            //sbPanel3.Text = TableName;
+            string s = $"select * from {sbPanel3.Text}";
+
+            RunSql(s);
+        }
+
+
+ string sql = s1.Trim(); // Trim : 앞뒤 공백을 없앤다. (중간 공백은 빼고)
+
+[ DB 닫기 ]
+
+        private void mnuDBClose_Click(object sender, EventArgs e)
+        {
+            sqlCon.Close();
+
+
+            sbPanel1.Text = "DB File Name";
+            sbPanel1.BackColor = Color.Gray;
+            sbPanel2.Text = "DB Closed";
+
+            // sqlCon
+        }
+
+[ Column , Row 추가 ]
+
+
+Row는 상관없지만 Column 은 이름을 만들어줘야한다.
+
+
+        private void PlusColumn_Click(object sender, EventArgs e)
+        {
+            frminput dlg = new frminput("input Column");
+            DialogResult ret = dlg.ShowDialog();
+            if (ret == DialogResult.OK)
+            {
+                string s = dlg.sinput;
+                dataGrid.Columns.Add(s, s);
+            }
+
+        }
+
+        private void PlusRow_Click(object sender, EventArgs e)
+        {
+            dataGrid.Rows.Add();
+        }
+
+
+
+[ create ]
+create Table fTest
+(
+  id int,
+  fCode nchar(10),
+  fLoc nchar(20)
+)
+
+과제)
+create 를 사용하여
+값을 저장하고 새로운 테이블 만들기
+
+새로운 테이블 생성하는 메뉴 만들기
+
+        private void mnuNewTable_Click(object sender, EventArgs e)
+        {
+            frminput dlg = new frminput("신규 테이블 명");
+
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            string tableName = dlg.sinput;
+            string sql = $"Create table {tableName}(";
+
+
+            for (int i = 0; i< dataGrid.ColumnCount; i++) //dataGrid.ColumnCount == dataGrid.Columns.Count
+            {
+                sql += $"{dataGrid.Columns[i].HeaderText} nchar(20)";
+                if (i < dataGrid.ColumnCount - 1) sql += ", ";
+            }
+            sql += ")";
+
+            RunSql(sql); // 신규 테이블 생성 완료
+
+            // insert into [TableName].values (
+            // [col_val_1],[col_val_2],...
+            // )
+
+            for(int i=0;i<dataGrid.RowCount;i++)
+            {
+                sql = $"insert into {tableName} values (";
+                for(int j=0;j<dataGrid.Columns.Count;j++)
+                {
+                    sql += $"'{dataGrid.Rows[i].Cells[j].Value}'";
+                    if (j < dataGrid.ColumnCount - 1) sql += ",";
+                }
+                sql += ")";
+                RunSql(sql);
+            }
+
+        }
+
+```
+
 
