@@ -1096,4 +1096,55 @@ create 를 사용하여
 
 ```
 
+### 5/3
+```
+MVC
+
+데이터 테이블 만들고
+Models -> 추가 -> 새항목 -> 클래스 추가
+
+prob tab tab
+
+WebApp 추가 -> 새폴더 -> context -> 
+context추가 -> 클래스 생성
+
+DbContext -> 잠재적 추가사항에서 업데이트해도 되고
+               -> 도구 -> NuGet 패키지관리자-> 찾아보기 -> EntityFramework
+
+Controllers 추가 ->컨트롤러 -> 뷰가 포함된 추가 
+ -> user (WebApplication1.Models) -> userinfo (WebApplication1.Context)
+
+Controllers 추가 -> Fac (WebApplication1.Models)
+
+
+HomeController 코드에
+        public ActionResult Login()
+        {
+            ViewBag.Message = "Your login page.";
+
+            return View();
+        }
+추가
+
+Views -> Home -> 추가 -> 레이아웃이있는 MVC 5뷰 Login 만들기
+->코드 추가
+
+<div class="jumbotron">
+    <h1>Login</h1>
+    <form asp-controller ="Home" asp-action="Login"
+          <p>
+              <input id="Text1" type="text" name="UID" /><input id="Submit1" type="submit" value="Login" />
+          </p>
+              <input id="Text2" type="password" name="PWD"/>
+    </form>
+</div>
+
+(WebApplication 속성에서 특정페이지 선택)
+
+비민번호는 원문을 비교하는게 아니라
+암호문을 비교하는것이다.
+
+
+
+```
 
