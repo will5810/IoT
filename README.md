@@ -1164,3 +1164,53 @@ account == 1 일때만
 
 IIS(Internet Information Service)
 ```
+
+### 5/13
+```
+cat config.txt
+ifconfig
+
+Vi editor : vi 편집기
+
+# : root 권한
+$ : user 권한
+
+user 홈 디렉토리
+
+sudo( Super User 로 do(실행))
+apt 패키지 다운로드      // update,upgrade 가장최신버전
+sudo apt-get update      
+sudo apt-get upgrades
+
+sudo apt-get upgrades
+딸기-> 기본설정-> add/remove software(1)
+검색창 korea -> korean font 선택
+sudo apt-get install ibus ibus-hangul
+reboot
+
+sudo raspi-config  
+
+sudo passwd : root
+
+apt-get install samba samba-common-bin
+
+
+d/rwx/rwx/rwx/ 
+d: directory
+7/7/7  = 111/111/111
+권한을 나타내준다 
+
+
+cd :current directoy
+
+cd / : change directory root로
+ls : 
+ls -al : 전체적인 
+
+[pi] 
+  path=/home/pi/Work
+  writeable=Yes
+  create mask=0777
+  directory mask=0777
+  pubic=no
+```
