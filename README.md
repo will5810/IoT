@@ -1214,3 +1214,96 @@ ls -al : 전체적인
   directory mask=0777
   pubic=no
 ```
+
+### 5/14 
+```
+RaspberryPi
+
+$ : 일반 user을 나타냄
+pwd : 현재 디렉토리가 어딘지
+ls : 파일의 리스트를 볼수있음
+ls -al : 더많은 파일의 정보를 볼수있음 권한등등..
+
+sudo smbpasswd -a pi  : sudo 권한으로 smb 비밀번호 append한다.
+ifconfig : 라즈베리파이에서 IP 보는법
+
+
+sudo systemctl restart smbd        : d :demon
+아무 대답없으면 잘나온거다
+
+cd /etc/wpa_supplicant :
+cat wpa_supplicant.conf :  네트워크 상태보기
+
+.. : 상위 Folder 로 이동해라
+.  : 현재 directory 
+
+ls net*
+cd network : network로 이동해라
+
+sudo vi interfaces 
+
+[ vi editor] 에서
+i : insert 현재 캐럿에 문자삽입
+a : append 현재문자 뒤에 붙여줌
+작업을 한후 esc 를 무조건 눌러줘야한다
+나갈때는 esc 누르고 shift+ :(콜론) 후 q! 입력
+x : 한문자만 삭제
+dd : 한줄 삭제
+
+
+[ 라즈베이파이 초기 세팅 작업]
+
+1. SD card format
+2. raspbian - OS download
+3. SD card에 OS porting
+4. RaspberryPi 에 삽입
+5. KBD/Mouse/Monitor 설치 (화면 입력으로 전환)
+6. 전원인가
+
+-VNC 활성화 : raspi-config (미설정시 최소 해상도 640 * 480)
+  [terminal] sudo raspi-config 후 mode 4 60hz 로 바꿈 
+-원격 제어 가능한 상태확보 
+  raspberry pi configuration-> Interfaces -> SSH VNC 'Enable'로 설정
+-Wifi 사용 가능 (고정 IP 미확보 -> 고정 IP설정)
+  [terminal] ipconfig로 ip 확인 
+ 고정IP 설정 :  Wifi 우클릭후-> Wireless Setting -> Configure :SSID ,WIFI 설정
+-> 첫번째 Address 192.0 , Router : 뒤에가 1 
+
+7. PC에서 원격접속(VNC Viewer)
+   최초 계정 : id=pi ,pwd= raspberry
+8. update/upgrade --> 한글 입출력 모듈 설치(ibus)
+[terminal]  sudo apt-get upgrade
+  	  sudo apt-get upgrade
+    	  딸기 -> 기본설정 -> add/remove software(1) -> korea -> 폰트선택
+	  sudo apt-get install ibus ibus-hangul
+              reboot  
+9. samba 설치 --> PC에서 NAS 사용
+ 파일 Work 추가
+[terminal]  apt-get install samba samba-common-bin
+              sudo passwd 설정후 -> su  :수퍼유저 권한
+              home pi etc samba 들어온후
+              nano smb.conf  또는 vi smb.conf 입력
+              sudo  
+ [pi] 
+  path=/home/pi/Work
+  writeable=Yes
+  create mask=0777
+  directory mask=0777
+  public=no             
+                           
+ 편집후 -> ^o -> ^x
+
+  sudo systemctl restart smbd
+  후에 PC 가서 '\\ IP' 입력후 안에 파일넣기 ( id=pi ,pwd=1(자신이설정한것) )
+
+
+sudo passwd : 암호설정
+su : SuperUser로 들어오기
+home pi etc samba 들어온후
+nano smb.conf 에서 편집하기
+sudo systemctl restart smbd
+
+sudo apt-get remove samba : 모든 samba 지우는거 (에러떳을때 등등)
+ibus 설치 했을때도 한글안될때 raspberry pi configuration -> Localisation -> 
+ -> Locale -> en, US , UTP-8 으로 설정
+```
