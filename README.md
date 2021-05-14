@@ -1306,4 +1306,14 @@ sudo systemctl restart smbd
 sudo apt-get remove samba : 모든 samba 지우는거 (에러떳을때 등등)
 ibus 설치 했을때도 한글안될때 raspberry pi configuration -> Localisation -> 
  -> Locale -> en, US , UTP-8 으로 설정
+ 
+ ----------------------------------------------------------------------------------
+sudo apt-get install gcc : gcc 컴파일러 설치
+gcc -v 
+make -v
+pwd :현재 위치보기
+gcc -o hello hello.c : gcc 컴파일 hello라는 이름으로 output 해라
+ls -al 했을때  앞에 'x' 는 실행가능여부
+파일안에 만들고 누르면 geany 가 켜지고 거기서 c언어로 편집한뒤
+현재 디렉토리라도 hello 이렇게만 치면 안되고 ./hello 라고 입력해야한다
 ```
