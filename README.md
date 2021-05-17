@@ -1317,3 +1317,163 @@ ls -al 했을때  앞에 'x' 는 실행가능여부
 파일안에 만들고 누르면 geany 가 켜지고 거기서 c언어로 편집한뒤
 현재 디렉토리라도 hello 이렇게만 치면 안되고 ./hello 라고 입력해야한다
 ```
+
+### 5/17
+```
+라즈베이파이 설정
+ SSH : 외부접속을 위한 SSH(Secure Shell)를 사용할수 있도록 설정한다.
+ VNC : 외부 화면공유를 위한 VNC를 사용할수 있도록 설정한다.
+
+ls -al > aa
+ -> >: Redirection  ls -al에 'aa' 저장해라
+
+Analog : 연속적
+
+Digital : 부호화
+
+gcc -o Hello hello.c  : hello.c 파일을 Hello 라는 이름으로 Output 해라
+./Hello : Hello 열기
+
+FILE *fp = fopen("test.txt","ab"); 
+ -> "ab" : append 하고 b(binary)모드(\n) 
+ fopen 함수 원형
+ FILE* fopen (const char* fileName, const char* fileMode)
+
+https://blockdmask.tistory.com/392 설명
+
+getchar -> 엔터까지 취급한다
+
+[terminal]
+ rm 파일명 : Remove
+ rm *.txt    : .txt 로 끝나는거 다 Remove
+
+
+[일일 과제]
+
+C# 의
+string GetToken(int index,string str,char chr)
+{
+ string [] sArr=str.split(chr);
+ return sArr[index];
+}
+함수를 C 기초작업 부터 코드 짜보기
+
+C
+
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+
+int chrFind(char *str,char chr);
+int chrFind(char *str,char chr);
+char **Split(char *str,char chr);
+int chrCount(char *str,char chr);
+char *GetToken(int index,char *str,char chr);
+
+
+int main()
+{
+	char buf[256];
+	int a,b,c;
+	/*printf("Input Output FileName:");
+	scanf("%s",buf);
+	FILE *fp = fopen(buf,"ab"); 
+	
+	while(1)
+	{		
+		scanf("%s",buf);	    
+		if(buf[0]=='>') break;
+		fprintf(fp,"%s",buf);
+	}
+	fclose(fp);
+	*/
+	/*
+	char *s1="abcdefghijkl";
+	while(1)
+	{
+		printf("input search char :");
+		int ch=getchar();
+		printf("[%c] 문자는 %d 번째에 있습니다\n",ch,chrFind(s1,ch)+1);		
+     }
+     */
+     char *tt="1,3,4,5,6,7,8,9";
+     char **ss=Split(tt,',');
+     while(1)
+     {
+		 printf("Input searce num:");
+		 scanf("%d",&a);
+		 printf("%d 번째 아이템은 %s 입니다\n",a,GetToken(a,tt,','));
+	 }
+	 
+
+	/*	
+	printf("Hello world!");
+	int c=getchar();
+	printf("you press [%c] key..",c);
+	*/
+	return 0;
+}
+
+int chrFind(char *str,char chr) //문자열 str 에서 문자 chr의 위치를 변환
+{
+	int i=0;
+	while(*str)
+	{
+		if(*str++ == chr) return i;
+		i++;
+	}
+	return -1;
+}
+
+
+int StrLens(char *str)
+{
+	int i=0;
+	while(*str++)
+	{
+		i++;
+		return i;
+	}
+}
+char *GetToken(int index,char *str,char chr)
+{
+	char** ss=Split(str,chr);
+	return *(ss+index-1);
+}
+
+char **Split(char *str,char chr) // "123,456,789" 
+{
+	char *tmp1=malloc(StrLens(str));
+	char **tmp2=malloc((chrCount(str,chr)+1)*4);
+	int i=1;
+	strcpy(tmp1,str);
+	*(tmp2+0)=tmp1;
+	while(*tmp1)
+	{
+		
+		if(*tmp1 == chr)  // "123" "456" "789" :원본손실
+		{
+			*tmp1=0;
+			*(tmp2+i++)=tmp1+1;
+			//*tmp2++=tmp1+1;
+			//for(int j=0;j<i;j++)
+			//{
+			//	printf("%s\n",*(tmp2+j));
+			//}
+		}
+		tmp1++;		
+	}
+	return tmp2;
+}
+int chrCount(char *str,char chr)
+{
+	int i=0;
+	while(*str++)
+	{
+		if(*str==chr) i++;
+	}
+	return i;
+	
+}
+
+```
