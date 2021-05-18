@@ -1477,3 +1477,84 @@ int chrCount(char *str,char chr)
 }
 
 ```
+
+### 5.18
+
+```
+* (포인터) == [ ](배열) 똑같으나 '[ ]' 안에는 상수가 들어가야한다.(n -> X)
+
+malloc 과 free
+
+C# 에서는
+int chrFind(char *str,char chr) 
+int chrFind(char *str,char chr,int n)
+이렇게 오버로딩이 가능한데 C는 안된다 따라서 
+int chrFindEx 이런식으로 새로 만들어야한다 
+
+gcc -o hello hello.c myLib.c : hello.c , myLib.c 실행
+gcc -o hello hello.c -lwiringPi : -l 라이브러리 -> wiringPi 생성 
+
+hello.c
+myHeader.h
+myLib.c        -> GetToken  부분 자세히 보기
+makefile
+
+[makefile]
+
+CC=gcc
+CFLAGS=-g
+OBJS=hello.o myLib.o
+TARGET=hello
+
+
+hello : hello.o myLib.o
+	$(CC) -o $@ $(OBJS)
+
+clean :
+	$(RM) $(OBJS) $(TARGET) core
+
+hello.o : hello.c myHeader.h
+myLib.o : myLib.c
+
+이렇게 만들게 되면 이제 make 만 쳐도 gcc할수있게 된다.
+
+빵판
+숫자 1,2,3,4,.... 은 그 줄에 5개씩이 연결 , 
+사이드에 '+'와 '-'는 그 전체줄이 연결되어있다
+
+
+엔터누르면 저기 들어오게 하는 코드
+#include <stdio.h>
+#include <wiringPi.h>
+
+int main()
+{
+	wiringPiSetup();
+	
+    pinMode(8,OUTPUT); // wPi:8번 핀을 쓰겠다 : 실제로는 3번을 쓴다
+ 	digitalWrite(8,HIGH); // LOW ,GND,0V (같은말)
+	
+	printf("엔터입력시 끄고꺼짐");
+	int i=0;
+	char c;
+	while(1)
+	{
+		getchar();
+		i++;
+		if(i==1)
+		{
+			digitalWrite(8,LOW);
+		}
+		else
+		{
+			digitalWrite(8,HIGH);
+			i=0;
+		}				
+	}
+	return 0;
+}
+
+[terminal]
+   gcc -o led LEDcontrol.c -lwiringPi
+   ./led
+```
