@@ -1620,7 +1620,7 @@ int main(int argc,char *argv[])
 }
 
 <조도센서를 이용하여 불켜지고 꺼지기>
-
+조도센서(Photo Resistor)는 주변 환경의 밝기를 측정할 수 있는 센서입니다.
 [terminal]
  i2cdetect -y 1 
 
