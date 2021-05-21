@@ -1558,3 +1558,170 @@ int main()
    gcc -o led LEDcontrol.c -lwiringPi
    ./led
 ```
+
+### 5/21
+```
+<#include <softPwm.h>> 
+밝기가 서서히 켜지고 꺼지기
+
+소스코드
+#include <stdio.h>
+#include <stdlib.h>
+#include <wiringPi.h>
+#include <softPwm.h>
+
+int main(int argc,char *argv[])
+{
+	if(argc<2)
+	{
+		printf("\nUsage : %s wPI-No\n\n",argv[0]);
+		return 0;
+	}
+	int pNo=atoi(argv[1]);
+	int pwmRange=100;
+	wiringPiSetup();
+	
+    pinMode(pNo,OUTPUT); // wPi:8번 핀을 쓰겠다 : 실제로는 3번을 쓴다
+    softPwmCreate(pNo,0,pwmRange);
+ 	//digitalWrite(8,HIGH); // <->LOW ,GND,0V (같은말)
+	
+	printf("엔터입력시 끄고꺼짐");
+	int i=0,k=1;
+	char c;
+	while(1)
+	{
+		getchar();
+		printf("%d번째",k);
+		k++;
+		i++;
+		if(i==1)
+		{
+			//for(int j=0;j<pwmRange;j++)
+				//softPwmWrite(pNo,pwmRange-j);// 이렇게 하면 실행속도가 늦어진다
+			for(int j=pwmRange;j>=0;j--)
+			{
+				softPwmWrite(pNo,j);
+				delay(30);
+			} 					 			
+			//digitalWrite(8,LOW);
+		}
+		else
+		{
+			for(int j=0;j<pwmRange;j++)
+			{
+				softPwmWrite(pNo,j); // 밝기 점점 up
+				delay(30);
+			}	
+			//digitalWrite(8,HIGH);
+			i=0;
+		}				
+	}
+	return 0;
+}
+
+<조도센서를 이용하여 불켜지고 꺼지기>
+
+[terminal]
+ i2cdetect -y 1 
+
+SPI, I2C ,Serial Port ,Serial Console  를 Enable 후 reboot한뒤
+[terminal]
+ i2cdetect -y 1 
+
+소스코드
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
+
+//int main(int argc, char *argv[]){	// 메인 함수의 원형 : int main(int argc, char *argv[])	
+int main(){
+	float val;
+	int hndl = wiringPiI2CSetup(0x48); // 리턴값은 I2C 모듈의 handle
+	int ch = 2;
+	
+	wiringPiSetup();
+	pinMode(25,OUTPUT);
+	
+	int op = 100;
+	/*
+	if(argc<2){
+		printf("\nUsage : %s AIN_No \n\n", argv[0]);
+		return 0;
+	}
+	int ch=atoi(argv[1]);	// ascii to integer
+	
+	if(strcmp(argv[1],"0")==0) ch=0;
+	else if(strcmp(argv[1],"1")==0) ch=1;
+	else if(strcmp(argv[1],"3")==0) ch=3;
+	*/
+	
+	wiringPiI2CWrite(hndl, ch);
+	wiringPiI2CRead(hndl);	// ack
+	
+	while(1){
+		// 자동증가비트, 아날로그출력 인에이블비트 1로
+		//0100 01xx		//채널 자동 증가 모드	--> wiringPiI2CWrite(hndl,0x44)	
+		val = wiringPiI2CRead(hndl);   // 센서에서 받은 값 반환
+		printf("read from I2C address [%d] : %f \n",ch,val);
+		
+		if(val>op)	digitalWrite(25,HIGH);
+		else digitalWrite(25,LOW);
+		 
+		delay(1000);
+	}
+	
+	return 0;
+}
+
+
+
+아두이노 센서
+
+PWM (Pulse Width Modulation)
+ :일정한 주기 내에서 Duty의 비를 변환 시켜서 평균 전압을 제어하는 방법
+  일반적으로 MCU 내부의 내장된 타이머 카운트를 이용하여 제어하게 됩니다.
+
+알고리즘
+1. Trig 신호 발사
+2. 발사와 동시에 timer가동
+3. Echo 감지와 동시에 timer 종료
+4. 3-2 : dt 계산
+5. dt(마이크로 세컨드) * 0.17 mm 
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <wiringPi.h>
+
+int main()
+{
+	int wTrig=15;
+	int wEcho=16;
+	
+	wiringPiSetup();
+	pinMode(wTrig,OUTPUT); // 측정 신호 발사
+	pinMode(wEcho,INPUT); // 반사 신호 검출
+
+	while(1)
+	{
+		digitalWrite(wTrig,LOW);
+		delayMicroseconds(100); // 트리거 신호 초기화
+		
+		digitalWrite(wTrig,HIGH); // 트리거 발사
+		delayMicroseconds(10); // 기본 delay 보다 훨씬 짧은 시간 10us(마이크로세컨)의 트리거 신호	
+		digitalWrite(wTrig,LOW);
+		delayMicroseconds(200); // 실제 신호발사까지 지연시간
+		
+		while(digitalRead(wEcho)==LOW); //until high	
+		long start = micros(); // 현재 시간의 마이크로초 단위 count
+		while(digitalRead(wEcho)==HIGH);	//until low
+		long end = micros(); // 현재 시간의 마이크로초 단위 count
+		
+		double dist=(end-start) * 0.17;
+		printf("Distance : %f\n",dist);
+		delay(1000);
+	}
+}
+```
