@@ -1725,3 +1725,57 @@ int main()
 	}
 }
 ```
+### 5/24
+```
+<자이로 센서>
+   : x,y,z 축의 기울기(각도)측정 , x,y,z 축의 가속도 측정
+MPU6050
+(Gyroscope[각속도])
+(Accellerate[가속도])
+
+자이로 센서
+ Interface에서
+ SPI,I2C,Serial Port,Serial Console -> Enable
+
+[terminal]
+i2cdetect -y 1
+#include <stdio.h>
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
+
+short i2cInt16(int hndl, int addr);
+
+int main()
+{
+	int i2cAddr = 0x68;
+	int bufAddr = 0x3b;
+	int pwrAddr = 0x6b;
+	
+	wiringPiSetup();
+	int hndl = wiringPiI2CSetup(i2cAddr);
+	
+	wiringPiI2CWriteReg8(hndl,pwrAddr,0);
+	
+	double x1,y1,z1,x2,y2,z2;
+	while(1)
+	{
+		 x1=i2cInt16(hndl,bufAddr)/16384.;
+		 y1=i2cInt16(hndl,bufAddr+2)/16384.;
+		 z1=i2cInt16(hndl,bufAddr+4)/16384.;
+		 x2=i2cInt16(hndl,bufAddr+8)/131.;
+		 y2=i2cInt16(hndl,bufAddr+10)/131.;
+		 z2=i2cInt16(hndl,bufAddr+12)/131.;
+		
+		printf("x1=%f y1=%f z1=%f x2=%f y2=%f z2=%f\n",x1,y1,z1,x2,y2,z2);		
+	}	
+
+}
+short i2cInt16(int hndl, int addr)
+{
+	short d1=wiringPiI2CReadReg8(hndl,addr);
+	short d2=wiringPiI2CReadReg8(hndl,addr+1);
+	short d3=(d1<<8) | d2;//d1*256+d2; 만약 8 shift 연산했는데 1------/----- 이러면 맨앞은 부호이므로 -(마이너스)가 된다. 
+	return d3;
+}
+
+```
