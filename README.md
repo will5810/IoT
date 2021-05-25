@@ -3075,3 +3075,106 @@ short i2cInt16(int hndl, int addr)
 }
 
 ```
+### 5.25
+
+```
+ADC = 48
+ ch(채널) 0~3 방식 
+
+I2C = 68
+ memory block 
+
+[ 과제 ]
+초음판센서를 이용해서
+거리에 따라 LED 등 3개 Red,Green,Yellow 가 켜지게하는
+차량 후진 상황을 시뮬
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <wiringPi.h>
+
+int main()
+{
+	int wTrig=15;
+	int wEcho=16;
+	
+	wiringPiSetup();
+	pinMode(wTrig,OUTPUT); // 측정 신호 발사
+	pinMode(wEcho,INPUT); // 반사 신호 검출
+	
+	pinMode(0,OUTPUT);
+	pinMode(2,OUTPUT);
+	pinMode(3,OUTPUT);
+	
+
+
+	while(1)
+	{
+		digitalWrite(wTrig,LOW);
+		delayMicroseconds(100); // 트리거 신호 초기화
+		
+		digitalWrite(wTrig,HIGH); // 트리거 발사
+		delayMicroseconds(10); // 기본 delay 보다 훨씬 짧은 시간 10us(마이크로세컨)의 트리거 신호	
+		digitalWrite(wTrig,LOW);
+		delayMicroseconds(200); // 실제 신호발사까지 지연시간
+		
+		while(digitalRead(wEcho)==LOW); //until high	
+		long start = micros(); // 현재 시간의 마이크로초 단위 count
+		while(digitalRead(wEcho)==HIGH);	//until low
+		long end = micros(); // 현재 시간의 마이크로초 단위 count
+		
+		double dist=(end-start) * 0.17;
+		if(dist>=150)
+		{
+			digitalWrite(3,HIGH);
+			digitalWrite(2,LOW);
+			digitalWrite(0,LOW);
+			printf("Distance : %f\n",dist);
+			delay(1000);
+		}
+		else if(dist>=100)
+		{
+			digitalWrite(3,LOW);
+			digitalWrite(2,HIGH);
+			digitalWrite(0,LOW);
+			printf("Distance : %f\n",dist);
+			delay(1000);
+		}
+		else
+		{
+			digitalWrite(3,LOW);
+			digitalWrite(2,LOW);
+			digitalWrite(0,HIGH);
+			printf("Distance : %f\n",dist);
+			delay(1000);
+		}
+
+	}
+}
+
+
+
+<리눅스를 이용한 TCP 소켓통신>
+
+알고리즘
+<Client>
+1. Socket 선언
+2. 초기화/생성 open 구성
+3. connection to Server
+
+<Server>
+1. 선언
+2. 구성
+3. local port 에 bind (엮어주는)
+4. listen
+5. Client 에서 connection 하면 Accept 하면 
+    Client<= (Session 연결) =>Server
+
+[terminal]
+   set
+   set | more : 한페이지씩 보여줌 (스페이스바)
+
+cd /usr/include
+find . *.h | grep -r inet_addr
+```
+
