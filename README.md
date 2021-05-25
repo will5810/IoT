@@ -3068,7 +3068,9 @@ short i2cInt16(int hndl, int addr)
 {
 	short d1=wiringPiI2CReadReg8(hndl,addr);
 	short d2=wiringPiI2CReadReg8(hndl,addr+1);
-	short d3=(d1<<8) | d2;//d1*256+d2; 만약 8 shift 연산했는데 1------/----- 이러면 맨앞은 부호이므로 -(마이너스)가 된다. 
+	short d3=(d1<<8) | d2;//d1*256+d2; 
+	// 만약 8 shift 연산했는데 1------/----- 이러면 맨앞은 부호이므로 -(마이너스)가 된다.
+	// int 는 4byte 이고 short 는 2byte
 	return d3;
 }
 
