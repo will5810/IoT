@@ -3178,4 +3178,170 @@ int main()
 cd /usr/include
 find . *.h | grep -r inet_addr : include 안에 .h 가 있는 것중 inet_addr을 read 
 ```
+### 5 / 26
+```
+Github 파일 저장법
+1. 주소복제하는 곳에가서 zip 다운로드후
+2. 압축한뒤 visual 에서 파일을 연다
+3. 그리고 한번 모두저장해주면 
+4. sln 파일이 생성된다.
 
+
+Server 와 Client 소켓통신
+
+------------------------------------------------------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h> //sys 밑에 socket.h
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <wiringPi.h>
+
+void * readProc();
+
+char *IP ="192.168.0.69";
+int PORT=9001;
+int sock; //socket handle
+
+int main()
+{
+
+	struct sockaddr_in sockinfo;
+	char buf[1024];
+	int i,j,k;
+	pthread_t readThread;
+	
+	sock=socket(AF_INET, SOCK_STREAM, 0);
+	sockinfo.sin_family = AF_INET;
+	inet_pton(AF_INET, IP, &sockinfo.sin_addr.s_addr);
+	sockinfo.sin_port=htons(PORT);
+	
+	
+	connect(sock, (struct sockaddr*)&sockinfo, sizeof(sockinfo));	
+	k=fcntl(sock, F_SETFL, 0);
+	fcntl(sock, F_SETFL, k | O_NONBLOCK);
+	
+	pthread_create(&readThread, NULL, readProc, NULL); // Thread 생성과 동시에 실
+	 
+	while(1)
+	{
+		scanf("%s",buf);
+		if(buf[0]=='q') break;
+		send(sock,buf,strlen(buf),0);
+         
+	}
+    
+	close(sock);
+	pthread_join(readThread,NULL);	
+}
+
+void * readProc() // Thread 함수는 포인터를 써야한다.
+{
+	int i;
+	char buf[1024];
+	
+	while(1)
+	{
+		i= recv(sock,buf,1024,0);
+		if(i>0) 
+		{
+			buf[i]=0;      // Server에서 메세지를 보내면 Client에서 보낸 것도 같이 보내지므로 		                       // Server에서 온 메시지 뒤부터 (i번째후) null 값으로 만들어준다
+			//if(buf[0]=='q') break;
+			printf("%s\n",buf);	//console 출력
+			delay(500);			
+		}
+
+	}
+	return NULL;
+}
+
+------------------------------------------------------------------------------------------
+[terminal]
+   gcc -o tcp tcp.c -l wiringPi -l pthread 
+  : -l 2개를 해주어야한다.
+
+
+
+------------------------------------------------------------------------------------------
+
+중간과제 < 센서를 이용하여 거리를 Server로 보내기>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h> //sys 밑에 socket.h
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <wiringPi.h>
+
+char *IP ="192.168.0.69";
+int PORT=9001;
+
+int main()
+{
+	int sock;
+	struct sockaddr_in sockinfo;
+	char buf[1024];
+	int i,j,k;
+	int wTrig=15;
+	int wEcho=16;
+	
+	sock=socket(AF_INET, SOCK_STREAM, 0);
+	sockinfo.sin_family = AF_INET;
+	inet_pton(AF_INET, IP, &sockinfo.sin_addr.s_addr);
+	sockinfo.sin_port=htons(PORT);
+	connect(sock, (struct sockaddr*)&sockinfo, sizeof(sockinfo));
+			
+	k=fcntl(sock, F_SETFL, 0);
+	fcntl(sock, F_SETFL, k | O_NONBLOCK);
+	
+	wiringPiSetup();
+	pinMode(wTrig,OUTPUT); // 측정 신호 발사
+	pinMode(wEcho,INPUT); // 반사 신호 검출
+
+	
+	while(1)
+	{
+		digitalWrite(wTrig,LOW);
+		delayMicroseconds(100); // 트리거 신호 초기화
+		
+		digitalWrite(wTrig,HIGH); // 트리거 발사
+		delayMicroseconds(10); // 기본 delay 보다 훨씬 짧은 시간 10us(마이크로세컨)의 트리거 신호	
+		digitalWrite(wTrig,LOW);
+		delayMicroseconds(200); // 실제 신호발사까지 지연시간
+		
+		while(digitalRead(wEcho)==LOW); //until high	
+		long start = micros(); // 현재 시간의 마이크로초 단위 count
+		while(digitalRead(wEcho)==HIGH);	//until low
+		long end = micros(); // 현재 시간의 마이크로초 단위 count
+		
+		double dist=(end-start) * 0.17;
+		
+            
+
+
+		//scanf("%s",buf);
+		//if(buf[0]=='q') break;
+		send(sock,buf,strlen(buf),0);
+		sprintf(buf,"%f",dist);
+		printf("%s\n",buf);	
+        delay(1000);
+        
+		i= recv(sock,buf,1024,0);
+		if(i>0) buf[i]=0;       
+		if(buf[0]=='q') break; 
+        //fprintf : file 출력
+        //sprinf : sprintf(buf, "%s\n",buf); 버퍼출력 // strcpy 끝에 NULL 확인
+        
+        
+
+	}
+	
+	close(sock);
+}
+```
