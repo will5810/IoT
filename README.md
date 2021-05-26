@@ -3174,7 +3174,8 @@ int main()
    set
    set | more : 한페이지씩 보여줌 (스페이스바)
 
+[terminal]
 cd /usr/include
-find . *.h | grep -r inet_addr
+find . *.h | grep -r inet_addr : include 안에 .h 가 있는 것중 inet_addr을 read 
 ```
 
