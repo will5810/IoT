@@ -3345,3 +3345,231 @@ int main()
 	close(sock);
 }
 ```
+### 5 / 28
+
+```
+
+
+================================================================================
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <pthread.h>
+#include <wiringPi.h>
+
+
+char *IP = "192.168.0.69";
+int PORT = 9001;
+int sock, sock_cli;
+struct sockaddr_in sockinfo, sockinfo_cli;	// 구조체 생성
+
+void *readProc();
+
+int main(){
+	char buf[1024];
+	pthread_t readThread;
+	sock = socket(AF_INET, SOCK_STREAM,0);	
+	
+	//sockinfo - 구조체 멤버변수에 값 넣기
+	sockinfo.sin_family = AF_INET;
+	// h: 리틀 앤디안, -->(to) s(short), l(long)
+	sockinfo.sin_addr.s_addr = htonl(INADDR_ANY);	// ip: 4byte, 
+	sockinfo.sin_port = htons(PORT);				//port: 2byte
+	
+	bind(sock,(struct sockaddr*)&sockinfo, sizeof(sockinfo));
+	listen(sock,100);
+	
+	int n = sizeof(sockinfo_cli);
+	//클라이언트용 sockinfo
+	sock_cli = accept(sock,(struct sockaddr*)&sockinfo_cli,&n);	// blocking
+	//int k=fcntl(sock_cli, F_SETFL,0);  // F_SETFL: setting flag, 현재 소켓의 flag 가져오기
+	//fcntl(sock_cli, F_SETFL, k | O_NONBLOCK);	//Output nonbolck
+	pthread_create(&readThread, NULL, readProc, NULL);
+	
+	while(1){
+		printf("Input text > ");
+		scanf("%s",buf);
+		if(buf[0] == 'q') break;
+		send(sock_cli,buf,strlen(buf),0);
+		int i=recv(sock_cli,buf,1024,0);	// blocking
+		if(i>0) buf[i]=0;
+		if(buf[0]=='q') break;
+		printf("%s\n",buf);
+	}
+	close(sock);
+	//pthread_join(readThread, NULL);	// 스레드 종료까지 기다림
+	return 0;
+}
+void *readProc(){
+	int i;
+	char buf1[1024];
+	while(1){
+		i=recv(sock_cli,buf1,1024,0);	// blocking
+		
+		if(i>0) buf1[i]=0;
+		if(buf1[0]=='q') break;
+		printf("\n%s\n",buf1);
+
+		delay(500);
+	}
+	return NULL;
+}
+
+
+================================================================================
+
+<UDP Server >
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <pthread.h>
+
+typedef union teamType
+{
+	int ips;
+	char ip[4];
+} TMTP;
+
+void *readProc();
+
+//char *IP_CLI ="192.168.0.69";
+int PORT = 9100;
+int sock_sv, sock_cli, f_cli=0;
+
+struct sockaddr_in sockinfo_sv, sockinfo_cli;
+
+int main()
+{
+	char buf[512];
+	
+    pthread_t readThread; //리눅스 스레드는 생성과 동시에 실행된다
+	sock_sv=socket(AF_INET,SOCK_DGRAM,0);
+	sock_cli=socket(AF_INET,SOCK_DGRAM,0); //
+	sockinfo_sv.sin_family=AF_INET;
+	sockinfo_sv.sin_addr.s_addr=htonl(INADDR_ANY);
+	// htonl : h to n l :h를 n으로 바꾸는데 long(4byte)로 바꾼다.
+	sockinfo_sv.sin_port=htons(PORT);
+	
+	//printf("PORT: %d(%04x) ===> htons(PORT): %d(%04x)\n",PORT,PORT,sockinfo_sv.sin_port,sockinfo_sv.sin_port);
+	bind(sock_sv,(struct sockaddr *)&sockinfo_sv, sizeof(sockinfo_sv));
+	pthread_create(&readThread,NULL,readProc,NULL);
+	
+
+    printf("Waiting for Remote message...\n\n");
+    while(1)
+    {
+		if(f_cli)
+		{
+			TMTP tt;
+			tt.ips=sockinfo_cli.sin_addr.s_addr;
+			printf("input text (0x%x8x : %d.%d.%d.%d) :"
+			,sockinfo_cli.sin_addr,tt.ip[0],tt.ip[1],tt.ip[2],tt.ip[3]);
+			//printf("Input text (0x%08x) :",sockinfo_cli.sin_addr.s_addr);
+			scanf("%s",buf);
+			sockinfo_cli.sin_port=htons(PORT);
+			sendto(sock_cli, buf, strlen(buf), 0, (struct sockaddr *)&sockinfo_cli, sizeof(sockinfo_cli));					
+		}
+		pthread_join(readThread,NULL);
+		close(sock_sv);
+		/*
+		int n=sizeof(sockinfo_cli);
+		int count = recvfrom(sock_sv, buf, 512, 0, (struct sockaddr *)&sockinfo_cli, &n);
+		if(count>0)
+		{
+			buf[count]=0;
+			printf("%s",buf);
+			//inet_pton(AF_INET,IP_CLI,&sockinfo_cli.sin_addr.s_addr);	
+			sockinfo_cli.sin_port=htons(PORT);
+			strcpy(buf,"ACK");
+			printf("Remote EP : 0x%08x : 0x%04x \n",sockinfo_cli.sin_addr.s_addr,sockinfo_cli.sin_port);
+			sendto(sock_cli, buf, strlen(buf), 0, (struct sockaddr *)&sockinfo_cli, sizeof(sockinfo_cli));		
+		}		*/
+	}	
+}
+
+void *readProc()
+{
+	char buf[512];
+	while(1)
+	{
+		int n=sizeof(sockinfo_cli);
+		int count =recvfrom(sock_sv, buf, 512, 0, (struct sockaddr *)&sockinfo_cli, &n);
+		if(count>0)
+		{
+			buf[count]=0;
+			printf("%s",buf);
+			system(buf);
+			//printf("%s",buf);
+			f_cli=1;
+		}
+	}
+}
+
+================================================================================
+udpSend 
+<IP><Port>   :server
+ <file>  :target file(full path)
+
+서버에서
+ip , port , file경로 입력하면
+
+send에서 파일안에 텍스트를 읽어
+
+서버로 다시보낸다.
+IP ,PORT , FILE PATH 
+입력하면 그 파일안의 텍스트를 가져오는 프로그램
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+
+//char *IP = "192.168.0.69";
+//int PORT = 9100;
+struct sockaddr_in udp_info;
+int sock;
+
+int main(int argc,char **argv) // <IP>,<PORT>,<FILE PATH>
+{
+	char *IP =argv[1];
+ 	int PORT =atoi(argv[2]);
+ 	char *File_path = argv[3];
+ 	
+	FILE *fp=fopen(File_path,"rb"); //b : binary 있는 그대로 read (거의 무조건 뒤에'b'를 붙임)
+ 
+	char buf[512];
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	udp_info.sin_family=AF_INET;
+	inet_pton(AF_INET,IP,&udp_info.sin_addr.s_addr);
+	udp_info.sin_port= htons(PORT);
+
+    
+    
+	while(fgets(buf,512,fp))
+	{
+		sendto(sock, buf, strlen(buf), 0, (struct sockaddr *)&udp_info, sizeof(udp_info));			
+		sendto(sock,"\r\n", strlen(buf), 0, (struct sockaddr *)&udp_info, sizeof(udp_info));			
+	}
+	
+	close(sock);
+	fclose(fp);
+}	
+
+
+================================================================================
+
+```
