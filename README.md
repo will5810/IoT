@@ -3801,6 +3801,64 @@ double getDistance(int trigPinNum, int echoPinNum) {
 	return distance;
 }
 
+--------------------------------------------------------------------------------------
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <pthread.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
+
+
+char* IP = "192.168.0.154";
+int PORT = 9001;
+int sock_serv, sock_cli;
+struct sockaddr_in sockinfo_serv, sockinfo_cli;	
+
+char device[] = "/dev/ttyACM0";
+unsigned long baud = 9600;
+
+int main() {
+	int fd;
+	char buf[1024];
+	fflush(stdout);
+	if((fd=serialOpen(device, baud))<0) exit(1);
+
+	sock_serv = socket(AF_INET, SOCK_STREAM, 0);
+
+	sockinfo_serv.sin_family = AF_INET;
+	sockinfo_serv.sin_addr.s_addr = htonl(INADDR_ANY);
+	sockinfo_serv.sin_port = htons(PORT);
+
+	bind(sock_serv, (struct sockaddr*)&sockinfo_serv, sizeof(sockinfo_serv));
+	listen(sock_serv, 100);
+
+	int n = sizeof(sockinfo_cli);
+
+	sock_cli = accept(sock_serv, (struct sockaddr*)&sockinfo_cli, &n);	// blocking
+
+	char op='c';
+    	while(1){
+		int i=recv(sock_cli,buf,1024,0);	// blocking
+		if(i>0) buf[i]=0;
+		if(buf[0]=='q') break;
+		printf("buf=%s\n",buf);
+	    op=buf[0];
+	    //printf("op=%s\n",&op);
+		serialPutchar(fd,op);
+		delay(500);
+	} 
+	close(sock_cli);
+	close(sock_serv);
+
+	return 0;
+}
 
 
 ```
