@@ -3573,3 +3573,234 @@ int main(int argc,char **argv) // <IP>,<PORT>,<FILE PATH>
 ================================================================================
 
 ```
+
+### 6/8
+
+```
+#include <SoftwareSerial.h>
+#include <AFMotor.h>
+
+//뒷쪽
+AF_DCMotor motor_1(1);
+AF_DCMotor motor_2(2);
+//앞쪽
+AF_DCMotor motor_3(3);
+AF_DCMotor motor_4(4);
+
+
+void setup() {
+  Serial.begin(9600);
+  //뒷쪽
+  motor_1.setSpeed(255);
+  motor_1.run(RELEASE);
+  motor_2.setSpeed(255);
+  motor_2.run(RELEASE);
+  //앞쪽
+  motor_3.setSpeed(255);
+  motor_3.run(RELEASE);
+  motor_4.setSpeed(255);
+  motor_4.run(RELEASE);
+
+}
+
+void forward(){
+  //뒷쪽
+  motor_1.run(FORWARD);
+  motor_2.run(FORWARD);
+  //앞쪽
+  motor_3.run(FORWARD);
+  motor_4.run(FORWARD);
+  
+}
+
+void backward(){
+  //뒷쪽
+  motor_1.run(BACKWARD);
+  motor_2.run(BACKWARD);
+  //앞쪽
+  motor_3.run(BACKWARD);
+  motor_4.run(BACKWARD);
+}
+
+void rel(){
+  //뒷쪽
+  motor_1.run(RELEASE);
+  motor_2.run(RELEASE);
+  //앞쪽
+  motor_3.run(RELEASE);
+  motor_4.run(RELEASE);
+}
+
+void right(){
+  //뒷쪽
+  motor_1.run(FORWARD);
+  motor_2.run(BACKWARD);
+  //앞쪽
+  motor_4.run(FORWARD);
+  motor_3.run(BACKWARD);
+}
+
+void left(){
+  //뒷쪽
+  motor_1.run(BACKWARD);
+  motor_2.run(FORWARD);
+  //앞쪽
+  motor_4.run(BACKWARD);
+  motor_3.run(FORWARD);
+}
+char op;
+void loop() {
+
+  /*
+  Serial.println(distance);
+  if(distance <= 10){
+    right();
+    delay(500);
+    rel();
+  }
+  else{
+    rel();
+  }
+  delay(2000);
+  while(1){}
+  //char op = 
+  */
+  
+  if(Serial.available()){
+    char rd = Serial.read();
+    Serial.println(rd);
+    op = rd;
+  
+    if(op=='w'){
+      forward();
+      //delay(500);
+      //rel();
+    }
+    else if(op=='s'){
+      backward();
+
+      //delay(500);
+      //rel();
+    }
+    else if(op=='a'){
+      left();
+      //delay(500);
+      //rel();
+      
+    }
+    else if(op=='d'){
+      right();
+      //delay(500);
+      //rel();
+    }
+    else{
+      rel();
+    }
+    
+    delay(500);
+    while(1){}
+    /*
+    else if(rd=='c'){
+      exit(0);
+    }
+    else{
+      rel();
+    }
+    */
+  }
+}
+----------------------------------------
+
+#include <stdio.h>
+#include <wiringPi.h>
+#include <stdlib.h>
+#include <wiringSerial.h>
+#include <pthread.h>
+
+
+#define wTRIG 15
+#define wECHO 16
+
+char device[] = "/dev/ttyACM0";
+
+// filedescriptor
+int fd;
+unsigned long baud = 9600;
+double getDistance(int trigPinNum, int echoPinNum);
+
+void *dist(){
+	while(1){
+		digitalWrite(wTRIG, LOW);
+		delayMicroseconds(100);
+
+		digitalWrite(wTRIG, HIGH);
+		delayMicroseconds(10);
+		digitalWrite(wTRIG, LOW);
+		delayMicroseconds(200);
+
+		while (digitalRead(wECHO) == LOW);
+		long start = micros();
+		while (digitalRead(wECHO) == HIGH);
+		long end = micros();
+
+		double distance = (end - start) * 0.017;
+		printf("%f\n", distance);
+		if(distance<10.) serialPutchar(fd,'x');
+	}
+}
+
+
+int main(){
+	fflush(stdout);
+	
+	if(wiringPiSetup()==-1) exit(1);
+	if((fd=serialOpen(device, baud))<0) exit(1);
+
+	pinMode(wTRIG,OUTPUT);
+	pinMode(wECHO,INPUT);
+
+	pthread_t thr_dist;
+
+	int time_s, time_e;
+	float distance;
+	char op;
+	pthread_create(&thr_dist, NULL, dist, NULL);
+	while(1){
+//		distance = getDistance(wTRIG,wECHO);
+		op = getchar();
+		getchar();
+//		if(distance <= 10.) op = 'x';
+//		printf("%f\n",distance);
+		serialPutchar(fd,op);
+		delay(500);
+	}
+	
+
+	return 0;
+}
+
+
+
+double getDistance(int trigPinNum, int echoPinNum) {
+
+	digitalWrite(trigPinNum, LOW);
+	delayMicroseconds(100);
+
+	digitalWrite(trigPinNum, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(trigPinNum, LOW);
+	delayMicroseconds(200);
+
+	while (digitalRead(echoPinNum) == LOW);
+	long start = micros();
+	while (digitalRead(echoPinNum) == HIGH);
+	long end = micros();
+
+	double distance = (end - start) * 0.017;
+
+	return distance;
+}
+
+
+
+```
